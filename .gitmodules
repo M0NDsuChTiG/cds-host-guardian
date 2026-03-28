@@ -1,0 +1,6 @@
+[submodule "cds-authz-system"]
+	path = cds-authz-system
+	url = https://github.com/M0NDsuChTiG/cds-authz-system.git
+[submodule "btrfs-root-hunter"]
+	path = btrfs-root-hunter
+	url = https://github.com/M0NDsuChTiG/btrfs-root-hunter.git
