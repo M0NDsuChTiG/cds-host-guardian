@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CDS Host Guardian | Digital Bunker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Syne:wght@400;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0c;
+            --panel: rgba(20, 20, 25, 0.7);
+            --accent: #ff3e3e;
+            --accent-glow: rgba(255, 62, 62, 0.4);
+            --text: #e0e0e6;
+            --text-dim: #888891;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Анимированный фон с сеткой */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(var(--border) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            mask-image: radial-gradient(circle at center, black, transparent 80%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .shield-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px var(--accent-glow));
+            animation: float 4s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            line-height: 1;
+            margin-bottom: 10px;
+            background: linear-gradient(to bottom, #fff, #666);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 40px;
+            font-weight: 700;
+        }
+
+        .hero-desc {
+            max-width: 600px;
+            color: var(--text-dim);
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 10px 20px rgba(255, 62, 62, 0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px var(--accent-glow);
+            filter: brightness(1.2);
+        }
+
+        /* Секция возможностей */
+        .features {
+            padding: 100px 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: var(--panel);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            padding: 40px;
+            border-radius: 8px;
+            transition: border-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 2px;
+            height: 0;
+            background: var(--accent);
+            transition: height 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent-glow);
+        }
+
+        .feature-card:hover::before {
+            height: 100%;
+        }
+
+        .feature-card h3 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .feature-card p {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+        }
+
+        .status-tag {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 10px;
+            background: rgba(255, 62, 62, 0.1);
+            color: var(--accent);
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--accent-glow);
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        /* Архитектура / Код */
+        .code-preview {
+            background: #000;
+            border: 1px solid var(--border);
+            padding: 30px;
+            border-radius: 8px;
+            margin-top: 50px;
+            position: relative;
+        }
+
+        .code-header {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .red { background: #ff5f56; }
+        .yellow { background: #ffbd2e; }
+        .green { background: #27c93f; }
+
+        pre {
+            color: #a9b7c6;
+            font-size: 14px;
+            overflow-x: auto;
+        }
+
+        .keyword { color: #cc7832; }
+        .func { color: #ffc66d; }
+        .str { color: #6a8759; }
+        .comment { color: #808080; }
+
+        footer {
+            padding: 100px 0 50px;
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.8rem;
+        }
+
+        .terminal-text {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        /* Спецэффект сканлайна */
+        .scanline {
+            width: 100%;
+            height: 100px;
+            z-index: 10;
+            background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(255, 62, 62, 0.05) 50%, rgba(0, 0, 0, 0) 100%);
+            opacity: 0.1;
+            position: fixed;
+            bottom: 100%;
+            left: 0;
+            pointer-events: none;
+            animation: scanline 6s linear infinite;
+        }
+
+        @keyframes scanline {
+            0% { bottom: 100%; }
+            100% { bottom: -100px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="scanline"></div>
+
+    <div class="container">
+        <header>
+            <div class="shield-icon">🛡️</div>
+            <h1>HOST GUARDIAN</h1>
+            <div class="subtitle">Zero Trust Kernel Shield</div>
+            <p class="hero-desc">
+                Ультра-защищенный агент на базе eBPF LSM. 
+                Превращает ядро Linux в неприступный бастион, блокируя атаки на уровне Ring 0.
+            </p>
+            <a href="https://github.com/M0NDsuChTiG/cds-host-guardian" class="btn">Deploy Sentinel</a>
+        </header>
+
+        <section class="features">
+            <div class="feature-card">
+                <div class="status-tag">LSM/BPF</div>
+                <h3>Mount Isolation</h3>
+                <p>Блокировка sb_mount на уровне ядра. Полный иммунитет к container escapes и несанкционированному доступу к ФС.</p>
+            </div>
+            <div class="feature-card">
+                <div class="status-tag">Anti-Tamper</div>
+                <h3>Memory Shield</h3>
+                <p>Хирургическая блокировка ptrace. Ваша память — ваша собственность. Защита от инъекций шелл-кода и динамического анализа.</p>
+            </div>
+            <div class="feature-card">
+                <div class="status-tag">Ring 0</div>
+                <h3>Privilege Guard</h3>
+                <p>Интеллектуальный контроль task_fix_setuid. Моментальная блокировка попыток повышения прав через SUID-бинарники.</p>
+            </div>
+            <div class="feature-card">
+                <div class="status-tag">Network</div>
+                <h3>Egress Jail</h3>
+                <p>Тотальный сетевой карантин для недоверенных cgroups. Никаких Reverse Shell или утечек данных (Data Exfiltration).</p>
+            </div>
+        </section>
+
+        <section>
+            <h2 style="font-family: 'Syne'; font-size: 2rem; margin-bottom: 20px;">Kernel Code Insight</h2>
+            <div class="code-preview">
+                <div class="code-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
+                <pre>
+<span class="comment">// LSM Hook: Блокировка несанкционированного повышения прав</span>
+<span class="keyword">SEC</span>(<span class="str">"lsm/task_fix_setuid"</span>)
+<span class="keyword">int</span> <span class="func">BPF_PROG</span>(cds_restrict_setuid, <span class="keyword">struct</span> cred *new, <span class="keyword">const struct</span> cred *old) {
+    u64 cg_id = <span class="func">bpf_get_current_cgroup_id</span>();
+    u32 *is_trusted = <span class="func">bpf_map_lookup_elem</span>(&trusted_groups, &cg_id);
+
+    <span class="comment">// Zero Trust Check</span>
+    <span class="keyword">if</span> (new->uid.val == 0 && (!is_trusted || *is_trusted != 1)) {
+        <span class="func">bpf_printk</span>(<span class="str">"CDS: Privilege escalation blocked for cgroup %llu"</span>, cg_id);
+        <span class="keyword">return</span> -EPERM;
+    }
+    <span class="keyword">return</span> 0;
+}</pre>
+            </div>
+        </section>
+
+        <footer>
+            <p>Built with <span class="terminal-text">CRITICAL_INTENT</span> by M0NDsuChTiG</p>
+            <p style="margin-top: 10px; opacity: 0.5;">© 2026 CDS Host Guardian Project. All systems secure.</p>
+        </footer>
+    </div>
+</body>
+</html>
