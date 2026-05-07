@@ -1,40 +1,69 @@
-# CDS Host Guardian: Host-Level Zero Trust Shield
+# 🛡️ CDS Host Guardian: The Digital Bunker
 
-**CDS Host Guardian** — это высокопроизводительная система защиты хоста на базе eBPF (LSM), реализующая концепцию Zero Trust в Ring 0 ядра Linux.
+[![Kernel](https://img.shields.io/badge/Kernel-LSM%20%2F%20eBPF-red?style=for-the-badge&logo=linux)](https://kernel.org)
+[![Language](https://img.shields.io/badge/Language-Go%20%2F%20C-blue?style=for-the-badge&logo=go)](https://go.dev)
+[![Security](https://img.shields.io/badge/Security-Zero%20Trust-green?style=for-the-badge&logo=scuba)](https://en.wikipedia.org/wiki/Zero_trust_security_model)
 
-## Ключевые функции безопасности (LSM Hooks)
-
-Система реализует политику **Default Deny** для всех несанкционированных процессов, не входящих в доверенные cgroups:
-
-1.  **Mount Protection (`sb_mount`):** Блокирует несанкционированные операции монтирования, предотвращая побеги из контейнеров (container escapes) и несанкционированный доступ к файловым системам.
-2.  **Anti-Debugging (`ptrace_access_check`):** Запрещает использование `ptrace` для недоверенных процессов, защищая память критических служб от инъекций шелл-кода и динамического анализа.
-3.  **Privilege Escalation Prevention (`task_fix_setuid`):** Блокирует попытки повышения привилегий до `root` через SUID-бинарники или системные вызовы `setuid` для изолированных сред.
-4.  **Network Lockdown (`socket_connect`):** Реализует строгий Egress-фильтр, запрещая любые исходящие сетевые соединения для недоверенных cgroups (блокировка Reverse Shell и эксфильтрации данных).
-
-## Технологический стек
-
-*   **Ядро:** C (eBPF / LSM)
-*   **Загрузчик:** Go (cilium/ebpf)
-*   **Идентификация:** cgroup_id (v2) — для надежной изоляции в контейнерных средах.
-
-## Архитектура
-
-Проект состоит из двух частей:
-*   `bpf/`: Исходный код eBPF-сенсора на C.
-*   `cmd/loader/`: Загрузчик на Go, который динамически извлекает `cgroup_id` агента, авторизует его в ядре и активирует все уровни защиты.
-
-## Установка и запуск
-
-1. Скомпилируйте BPF-объект:
-   ```bash
-   cd bpf && make
-   ```
-2. Соберите и запустите загрузчик:
-   ```bash
-   go generate ./...
-   go build -o cds-guardian ./cmd/loader
-   sudo ./cds-guardian
-   ```
+**CDS Host Guardian** — это бескомпромиссная система защиты хоста, превращающая стандартную Linux-среду в неприступную крепость. Используя мощь **eBPF** и **Linux Security Modules (LSM)**, агент внедряет логику Zero Trust напрямую в Ring 0.
 
 ---
-*Developed with focus on uncompromising security and system integrity.*
+
+## 🔒 Четыре Столпа Защиты (LSM Shields)
+
+| Модуль | Описание | Уровень Угрозы |
+| :--- | :--- | :---: |
+| **📦 MOUNT SHIELD** | Блокировка `sb_mount`. Никаких побегов из контейнеров или несанкционированного доступа к ФС. | 🔴 Critical |
+| **🕵️ ANTI-DEBUG** | Блокировка `ptrace`. Полная изоляция памяти процессов от инъекций и анализа. | 🟠 High |
+| **👑 PRIVILEGE GUARD** | Блокировка `task_fix_setuid`. Иммунитет к SUID-эксплойтам и повышению прав до root. | 🔴 Critical |
+| **🌐 NETWORK JAIL** | Блокировка `socket_connect`. Нулевая сетевая активность для недоверенных сред (Zero Exfiltration). | 🟠 High |
+
+---
+
+## 🏗️ Архитектура: Zero Trust by Cgroup ID
+
+В отличие от классических систем, полагающихся на нестабильные PID, **CDS Host Guardian** использует `cgroup_id` (v2) как единственный источник истины.
+
+```text
+[ USER SPACE ]          [ KERNEL SPACE (Ring 0) ]
+      |                             |
+[ CDS AGENT ] <-------+------> [ BPF MAP: Trusted Groups ]
+      |               |             |
+      |          [ AUTHORIZE ]      |
+      |               |             v
+[ LOADER.GO ]         +------- [ LSM HOOKS (LSM_BPF) ]
+                                    |
+                         [ ALLOW / DENY DECISION ]
+```
+
+---
+
+## ⚡ Быстрый Старт
+
+### Требования
+*   Linux Kernel >= 5.7 (с поддержкой `CONFIG_BPF_LSM=y`)
+*   Clang/LLVM & Go 1.21+
+
+### Развертывание
+```bash
+# 1. Сборка нативного ядра безопасности
+cd bpf && make
+
+# 2. Активация лоадера
+go generate ./...
+go build -o cds-guardian ./cmd/loader
+
+# 3. Запуск "Цифрового Бункера"
+sudo ./cds-guardian
+```
+
+---
+
+## 🛠️ Технологический Стек
+*   **eBPF Runtime:** Нативная обработка событий в ядре без оверхеда.
+*   **C / CO-RE:** Портируемость между версиями ядер (Compile Once – Run Everywhere).
+*   **Golang Control Plane:** Современный, безопасный и быстрый интерфейс управления.
+
+---
+> **Disclaimer:** Этот проект создан для обеспечения максимальной безопасности. Использование в "боевых" условиях требует предварительной настройки белых списков cgroups.
+
+*Created by [M0NDsuChTiG](https://github.com/M0NDsuChTiG) with focus on uncompromising system integrity.*
